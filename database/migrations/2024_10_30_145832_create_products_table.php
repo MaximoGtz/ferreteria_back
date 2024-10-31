@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_category');
+            $table->string('name', 100);
+            $table->string('brand', 100);
+            $table->decimal('sell_price', 10, 2);
+            $table->decimal('buy_price', 10, 2);
+            $table->bigInteger('bar_code');
+            $table->integer('stock');
+            $table->longText('description')->nullable();
+            $table->enum('estado', ['INACTIVO', 'ACTIVO'])->default('ACTIVO');
             $table->timestamps();
+
         });
     }
 

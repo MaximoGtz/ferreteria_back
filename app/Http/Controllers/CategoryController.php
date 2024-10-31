@@ -1,9 +1,5 @@
 <?php
-<<<<<<< HEAD
 // prueb
-=======
-
->>>>>>> 6c1f19c026fb45f78715aec293191ed6868a7a9f
 namespace App\Http\Controllers;
 
 use App\Models\Category;

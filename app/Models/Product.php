@@ -3,12 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-<<<<<<< HEAD
-    
-=======
-    //
->>>>>>> 6c1f19c026fb45f78715aec293191ed6868a7a9f
+    use HasFactory;
+
+    protected $table = 'products';
+
+    protected $fillable = [
+        'id_category',
+        'name',
+        'brand',
+        'buy_price',
+        'sell_price',
+        'bar_code', // Use an underscore instead of a hyphen
+        'stock',
+        'description',
+        'state'
+    ];
+
+    // Relationship with the Image model
+    public function images()
+    {
+        return $this->belongsToMany(Image::class, 'product_images', 'product_id', 'image_id');
+    }
 }
