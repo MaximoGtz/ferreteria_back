@@ -33,7 +33,7 @@ class CategoryController extends Controller implements HasMiddleware
         $fields = $request->validate([
             'name' => 'required|max:255|unique:categories',
             'description' => 'required',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de imágenes
+            'tags' => 'required',
         ]);
 
         // Crear la categoría
@@ -68,6 +68,7 @@ class CategoryController extends Controller implements HasMiddleware
         $fields = $request->validate([
             'name' => 'required|max:255|unique:categories,name,' . $category->id, 
             'description' => 'required',
+            'tags' => 'required',
         ]);
         
         $category->update($fields);

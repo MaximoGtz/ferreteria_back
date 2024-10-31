@@ -26,7 +26,7 @@ class ProductController extends Controller
         $request->validate([
             'category_id' => 'required|integer',
             'name' => 'required|string|max:255',
-            'brand' => 'required|string|max:100',
+            'brand_id' => 'required|integer',
             'sell_price' => 'required|numeric',
             'buy_price' => 'required|numeric',
             'bar_code' => 'required|numeric|unique:products,bar_code',
@@ -46,10 +46,9 @@ class ProductController extends Controller
             }
         }
     
-        // Modificar la respuesta para incluir la URL completa
         $product->load('images');
         foreach ($product->images as $img) {
-            $img->image = url('storage/' . $img->image); // Cambia 'images/' a 'storage/' según el disco
+            $img->image = url('storage/' . $img->image); 
         }
     
         return response()->json($product, 201);
