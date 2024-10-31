@@ -24,7 +24,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_category' => 'required|integer',
+            'category_id' => 'required|integer',
             'name' => 'required|string|max:255',
             'brand' => 'required|string|max:100',
             'sell_price' => 'required|numeric',
@@ -68,7 +68,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'id_category' => 'integer',
+            'category_id' => 'integer',
             'name' => 'string|max:255',
             'brand' => 'string|max:100',
             'sell_price' => 'numeric',

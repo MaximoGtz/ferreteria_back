@@ -12,7 +12,7 @@ class Product extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'id_category',
+        'category_id',
         'name',
         'brand',
         'buy_price',
@@ -26,6 +26,10 @@ class Product extends Model
     // Relationship with the Image model
     public function images()
     {
-        return $this->belongsToMany(Image::class, 'product_images', 'product_id', 'image_id');
+        return $this->belongsToMany(Image::class, 'products_images', 'product_id', 'image_id');
     }
+    public function category()
+{
+    return $this->belongsTo(Category::class);
+}
 }
