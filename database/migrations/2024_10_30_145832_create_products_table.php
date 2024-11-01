@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->string('name', 100);
-            $table->string('brand', 100);
             $table->decimal('sell_price', 10, 2);
+            $table->decimal('wholesale_price', 10, 2)->nullable();
             $table->decimal('buy_price', 10, 2);
             $table->bigInteger('bar_code');
             $table->integer('stock');

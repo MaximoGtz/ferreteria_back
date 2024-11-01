@@ -14,7 +14,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        return Brand::with('images')->get();
+        return Brand::with(['images','products'])->get();
     }
 
     /**
@@ -53,7 +53,7 @@ class BrandController extends Controller
      */
     public function show(Brand $brand)
     {
-        return $brand->load('images');
+        return $brand->load(['images','products']);
     }
 
     /**

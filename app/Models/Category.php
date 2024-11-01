@@ -2,24 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-class Image extends Model
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+class Category extends Model
 {
     use HasFactory;
 
-    protected $table = 'images';
+    protected $fillable = [
+        "name",
+        "description",
+        "tags",
 
-    protected $fillable = ['image'];
-
+    ];
     public function products()
-    {
-        return $this->belongsToMany(Product::class, 'products_images', 'image_id', 'product_id');
-    }
-
-    public function brands()
-    {
-        return $this->belongsToMany(Brand::class, 'brand_images', 'image_id', 'brand_id');
-    }
+{
+    return $this->hasMany(Product::class);
+}
 }

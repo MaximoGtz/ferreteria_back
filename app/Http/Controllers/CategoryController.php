@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Image; // Asegúrate de importar el modelo Image
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -39,15 +38,6 @@ class CategoryController extends Controller implements HasMiddleware
         // Crear la categoría
         $category = Category::create($fields);
 
-        // // Manejar la carga de imágenes
-        // if ($request->hasFile('images')) {
-        //     foreach ($request->file('images') as $file) {
-        //         $path = $file->store('images', 'public');
-        //         $image = Image::create(['image' => $path]);
-
-
-        //     }
-        // }
 
         return response()->json($category, 201);
     }

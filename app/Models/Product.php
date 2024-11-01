@@ -12,15 +12,8 @@ class Product extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'category_id',
-        'name',
-        'brand',
-        'buy_price',
-        'sell_price',
-        'bar_code', // Use an underscore instead of a hyphen
-        'stock',
-        'description',
-        'state'
+        'category_id', 'name', 'brand_id', 'sell_price', 'buy_price',
+        'bar_code', 'stock', 'description', 'state', 'wholesale_price'
     ];
 
     // Relationship with the Image model
@@ -32,4 +25,9 @@ class Product extends Model
 {
     return $this->belongsTo(Category::class);
 }
+    public function brand()
+{
+    return $this->belongsTo(Brand::class);
 }
+}
+
