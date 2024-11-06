@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     public function index()
     {
 
-        return User::with('directions')->get(); 
+        return User::with('directions')->get();
     }
 
     /**
@@ -19,14 +19,14 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string|max:255', 
+            'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'image' => 'nullable|image|max:1024', 
-            'email' => 'required|email|unique:users,email|max:255', 
+            'image' => 'nullable|image|max:1024',
+            'email' => 'required|email|unique:users,email|max:255',
             'phone' => 'required|string|max:255',
             'rfc' => 'nullable|string|max:255',
             'role' => 'required|string|max:255',
-            'password' => 'required|string|min:6', 
+            'password' => 'required|string|min:6',
         ]);
 
 
@@ -37,7 +37,7 @@ class UserController extends Controller
             'phone' => $fields['phone'],
             'rfc' => $fields['rfc'] ?? null,
             'role' => $fields['role'],
-            'password' => bcrypt($fields['password']),
+            'password' => Hash::make($fields['password']),
         ]);
 
         if ($request->hasFile('image')) {
@@ -78,7 +78,7 @@ class UserController extends Controller
         ]);
 
         if (isset($fields['password'])) {
-            $fields['password'] = bcrypt($fields['password']);
+            $fields['password'] = Hash::make($fields['password']);
         }
 
 

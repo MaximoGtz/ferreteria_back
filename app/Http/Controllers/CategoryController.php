@@ -7,18 +7,19 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class CategoryController extends Controller implements HasMiddleware
+class CategoryController extends Controller 
+// implements HasMiddleware
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public static function middleware()
-    {
-        return [
-            new Middleware('auth:sanctum', except: ['index', 'show'])
-        ];
-    }
-
+    // public static function middleware()
+    // {
+        //     return [
+            //         new Middleware('auth:sanctum', except: ['index', 'show'])
+            //     ];
+            // }
+            
+            /**
+             * Display a listing of the resource.
+             */
     public function index()
     {
         return Category::with('products')->get(); // Carga las categorías y los productos
