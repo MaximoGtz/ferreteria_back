@@ -29,7 +29,6 @@ class ProductController extends Controller
         $request->validate([
             'category_id' => 'required|integer|exists:categories,id',
             'name' => 'required|string|max:255',
-            'brand' => 'string|max:100',
             'wholesale_price' => 'numeric',
             'brand_id' => 'required|integer|exists:brands,id',
             'sell_price' => 'required|numeric',
