@@ -13,13 +13,17 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $products = Product::with(['images', 'category', 'brand'])->get();
-        return response()->json($products);
-
+        //dd($products);
+        if ($request->wantsJson()) {
+            return response()->json($products);
+        }
+        return view('cart.cart')->with('products', $products);
 
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -108,8 +112,12 @@ class ProductController extends Controller
 
 public function show($id)
 {
-    $product = Product::with(['images', 'categories', 'brands'])->findOrFail($id);
-    return response()->json($product);
+    $product = Product::with(['images', 'category', 'brand'])->findOrFail($id);
+    // return response()->json($product);
+    if ($product) {
+        // Pasar el producto a la vista
+        return view('/products/'.$id)->with('product', $product);
+    }
 }
 
 
