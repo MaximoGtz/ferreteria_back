@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         $products = Product::with(['images', 'category', 'brand'])->get();
@@ -21,9 +19,6 @@ class ProductController extends Controller
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -60,11 +55,6 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
     
-    
-
-    /**
-     * Display the specified resource.
-     */
     public function update(Request $request, $id)
 {
     $request->validate([
