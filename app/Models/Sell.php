@@ -14,8 +14,10 @@ class Sell extends Model
 {
     return $this->belongsTo(Cart::class);
 }
+
 public function client()
 {
-    return $this->belongsTo(Client::class);
+    return $this->belongsTo(User::class, 'client_id');
 }
+
 }

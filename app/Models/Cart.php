@@ -12,13 +12,13 @@ class Cart extends Model
         'client_id', 'total'
     ];
     public function client()
-    {
-        return $this->belongsToOne(Client::class);
-    }
-    public function productCart()
-    {
-        return $this->hasMany(ProductsCart::class);
-    }
+{
+    return $this->belongsTo(User::class); // Ajusta el nombre de la clave foránea si es necesario
+}
+public function producto_cart()
+{
+    return $this->hasMany(ProductsCart::class); // Ajusta el nombre de la clave foránea si es necesario
+}
     public function sell()
     {
         return $this->hasOne(Sell::class);

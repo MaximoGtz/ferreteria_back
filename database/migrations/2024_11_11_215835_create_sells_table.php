@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('client_id')->references('id')->on('users')->onDelete('cascade');
             $table->decimal('total', 10, 2 );
             $table->decimal('iva', 10, 2 );
-            $table->string('purchase_method');
+            $table->string('purchase_method')->nullable();
             $table->timestamps();
         });
     }

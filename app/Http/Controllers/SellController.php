@@ -1,49 +1,83 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Sell;
 use App\Models\Cart;
-use App\Models\Product;
-use App\Models\ProductCart;
+use Illuminate\Http\Request;
+
 class SellController extends Controller
 {
-    public function index(){
-        $carts = Cart::with('User')->with('producto_cart.producto')->get();
-        dd($carts);
+    // Crear una venta
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'cart_id' => 'required|exists:carts,id',
+            'client_id' => 'required|exists:users,id',
+            'total' => 'required|numeric',
+            'iva' => 'required|numeric',
+            'purchase_method' => 'nullable|string',
+        ]);
+
+        // Crear la venta
+        $sell = Sell::create($validated);
+
+        // Aquí también puedes actualizar el estado del carrito si lo deseas
+        $cart = Cart::find($request->cart_id);
+        $cart->status = 'sold';  // Cambiar el estado del carrito si lo necesitas
+        $cart->save();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $sell
+        ], 201);
     }
 
+    // Mostrar todas las ventas
+    public function index()
+    {
+        $sells = Sell::with('cart.producto_cart.producto', 'client')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $sells
+        ], 200);
+    }
+
+    // Mostrar una venta específica
     public function show($id)
     {
-        $carts = Cart::with('User')->with('producto_cart.producto')->find($id);
-        dd($carts);  
-    }
-    
-    public function store(Request $request){
-        DB::beginTransaction();
-        try{
-            // Crear cart
-            $cart = new Cart();
-            $cart->cart_id = $request->id_cliente;
-            $cart->client_id = $request->client_id; 
-            $cart->total = $request->total;  
-            $cart->iva = $request->iva; 
-            $cart->purchase_method = $request->purchase_method;
-            $cart->save();
+        $sell = Sell::with('cart.producto_cart.producto', 'client')->find($id);
 
-            
-            
-            DB::commit();
-        } catch(\Exception $e) {
-            DB::rollback();
-            return $e->getMessage();
+        if (!$sell) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sell not found'
+            ], 404);
         }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $sell
+        ], 200);
     }
 
-    public function destroy($id){
-        $cart = Cart::find($id);
-        $cart->producto_cart()->delete();
-        $cart->delete();
-        dd($cart);
+    // Eliminar una venta
+    public function destroy($id)
+    {
+        $sell = Sell::find($id);
+        if (!$sell) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sell not found'
+            ], 404);
+        }
+
+        $sell->producto_cart()->delete();  // Eliminar productos relacionados
+        $sell->delete();  // Eliminar la venta
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sell deleted successfully'
+        ], 200);
     }
 }

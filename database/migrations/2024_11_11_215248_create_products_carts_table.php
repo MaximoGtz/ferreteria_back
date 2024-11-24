@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->integer('quantity');
             $table->decimal('subtotal', 10, 2 );
+            $table->enum('state', ['waiting', 'sell'])->default('waiting');
             $table->timestamps();
         });
     }

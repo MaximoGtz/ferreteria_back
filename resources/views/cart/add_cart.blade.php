@@ -36,7 +36,7 @@
             </svg>
         </button>
     </form>
-    <form action="/less/cart" method="post">
+    <form action="/less/cart/{{$product->id}}" method="post">
         @csrf
         <input type="hidden" name="id" value="{{$product->id}}">
         <button type="submit"
@@ -49,7 +49,7 @@
         </svg>
         </button>
     </form>
-    <form action="/more/cart" method="post">
+    <form action="/more/cart/{{$product->id}}" method="post">
         @csrf
         <input type="hidden" name="id" value="{{$product->id}}">
         <button type="submit"
@@ -80,6 +80,10 @@
                 stroke="#EF4444" stroke-width="1.6" stroke-linecap="round" />
         </svg>
     </button>
+</form>
+<form action="{{ route('cart.sell') }}" method="post">
+    @csrf
+    <button type="submit" class="btn btn-primary">buy</button>
 </form>
 
 </body>

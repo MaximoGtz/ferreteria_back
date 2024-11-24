@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\SellController;
 
 // Ruta de bienvenida
 Route::get('/', function () {
@@ -23,7 +24,8 @@ Route::get('/product/show/{id}',[ProductController::class,'show']);
 
 Route::post('/add/cart', [CartController::class, 'add'])->name('cart.add');
 Route::post('/quit/cart/{id}', [CartController::class, 'quitItem'])->name('cart.quit');
-Route::post('/more/cart', [CartController::class, 'more'])->name('cart.more');
-Route::post('/less/cart', [CartController::class, 'less'])->name('cart.less');
+Route::post('/more/cart/{id}', [CartController::class, 'more'])->name('cart.more');
+Route::post('/less/cart/{id}', [CartController::class, 'less'])->name('cart.less');
 Route::post('/clear/cart', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('/sell', [SellController::class, 'store'])->name('cart.sell');
 
