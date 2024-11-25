@@ -27,11 +27,11 @@ class CartController extends Controller
             'data' => $cart
         ], 200);
     }
-    public function show($id)
+    public function show()
     {
         $cart = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'waiting')->with('producto');
-        }])->find($id);
+        }])->where('client_id', 2)->get();
     
         if (!$cart) {
             return response()->json([
