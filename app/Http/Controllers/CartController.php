@@ -11,12 +11,41 @@ class CartController extends Controller
 {
     public function get()
     {
-        $cart = Cart::with('client', 'producto_cart.producto')->get();
+        $cart = Cart::with(['client', 'producto_cart' => function ($query) {
+            $query->where('state', 'waiting')->with('producto');
+        }])->get();
+    
+        if (!$cart) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Carrito no encontrado'
+            ], 404);
+        }
+    
         return response()->json([
             'status' => 'success',
             'data' => $cart
         ], 200);
     }
+    public function show($id)
+    {
+        $cart = Cart::with(['client', 'producto_cart' => function ($query) {
+            $query->where('state', 'waiting')->with('producto');
+        }])->find($id);
+    
+        if (!$cart) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Carrito no encontrado'
+            ], 404);
+        }
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => $cart
+        ], 200);
+    }
+    
 
     public function add(Request $request)
 {
@@ -147,7 +176,7 @@ class CartController extends Controller
         $productCart->save();
     
         // Recalcular el total del carrito sumando todos los subtotales de los productos en el carrito
-        $cart->total = ProductsCart::where('cart_id', $cart->id)->sum('subtotal');
+        $cart->total = ProductsCart::where('cart_id', $cart->id)->where('state', 'waiting')->sum('subtotal');
         $cart->save();
     
         return response()->json(['status' => 'success', 'data' => $cart], 200);
@@ -194,7 +223,7 @@ class CartController extends Controller
         $productCart->save();
     
         // Recalcular el total del carrito sumando todos los subtotales de los productos en el carrito
-        $cart->total = ProductsCart::where('cart_id', $cart->id)->sum('subtotal');
+        $cart->total = ProductsCart::where('cart_id', $cart->id)->where('state', 'waiting')->sum('subtotal');
         $cart->save();
     
         return response()->json(['status' => 'success', 'data' => $cart], 200);

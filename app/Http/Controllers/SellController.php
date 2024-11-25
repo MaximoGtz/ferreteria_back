@@ -31,6 +31,13 @@ class SellController extends Controller
         $cartItem->state = 'sell';  // Cambiar el estado del carrito si lo necesitas
         $cartItem->save();  // Guardar cada uno de los cambios  
         }
+        $cart = Cart::where('client_id', 2)->first();
+        if (!$cart) {
+            return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
+        }
+        $cart->total = ProductsCart::where('cart_id', $cart->id)->where('state', 'waiting')->sum('subtotal');
+        $cart->save();
+        
 
         return response()->json([
             'status' => 'success',
@@ -41,7 +48,9 @@ class SellController extends Controller
     // Mostrar todas las ventas
     public function index()
     {
-        $sells = Sell::with('cart.producto_cart.producto', 'client')->get();
+        $sells = Cart::with(['client', 'producto_cart' => function ($query) {
+            $query->where('state', 'sell')->with('producto');
+        }])->get();
 
         return response()->json([
             'status' => 'success',
@@ -52,7 +61,9 @@ class SellController extends Controller
     // Mostrar una venta específica
     public function show($id)
     {
-        $sell = Sell::with('cart.producto_cart.producto', 'client')->find($id);
+        $sells = Cart::with(['client', 'producto_cart' => function ($query) {
+            $query->where('state', 'sell')->with('producto');
+        }])->find($id);
 
         if (!$sell) {
             return response()->json([
