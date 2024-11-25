@@ -53,11 +53,8 @@ class CartController extends Controller
         // Validar los datos del formulario
         $request->validate([
             'id' => 'required|integer', 
-            'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'image' => 'nullable|url',
-            'description' => 'nullable|string',
         ]);
 
         // Obtener o crear un carrito asociado al cliente

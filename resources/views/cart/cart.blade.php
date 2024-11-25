@@ -20,14 +20,12 @@
                         <p class="card-text">{{ $item->description ?? 'Sin descripción' }}</p>
                         <p class="card-text">Marca: {{ $item->brand->name ?? 'Desconocida' }}</p>
                         <p class="card-text">Precio: ${{ $item->sell_price }}</p>
-                        <form action="/add/cart" method="post">
+                        <form action="api/cart/add" method="post">
                             @csrf
                             <input type="hidden" name="id" value="{{ $item->id }}">
-                            <input type="hidden" name="name" value="{{ $item->name }}">
                             <input type="hidden" name="price" value="{{ $item->sell_price }}">
                             <input type="hidden" name="quantity" value="1">
-                            <input type="hidden" name="image" value="{{ $item->images->first()->image ?? '' }}">
-                            <input type="hidden" name="description" value="{{ $item->description }}">
+                          
                             <button type="submit">Agregar al carrito</button>
                         </form>
                         
