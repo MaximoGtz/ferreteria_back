@@ -31,27 +31,11 @@ class CartController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // Agregar el producto al carrito de sesión
-        \Cart::add([
-            'id' => $request->id,
-            'name' => $request->name,
-            'price' => $request->price,
-            'quantity' => $request->quantity,
-            'attributes' => [
-                'image' => $request->image,
-                'description' => $request->description,
-            ]
-        ]);
-
         // Obtener o crear un carrito asociado al cliente
         $cart = Cart::firstOrCreate(
             ['client_id' => 2], // Cambiar este ID por el del cliente autenticado
             ['total' => 0]
         );
-
-        // Actualizar el total del carrito
-        $cart->total = \Cart::getSubTotal();
-        $cart->save();
 
         // Registrar o actualizar el producto en `products_cart`
         $productCart = ProductsCart::where('cart_id', $cart->id)
@@ -75,6 +59,15 @@ class CartController extends Controller
             ]);
         }
 
+        // Calcular el nuevo total del carrito basado en los productos "waiting"
+        $total = ProductsCart::where('cart_id', $cart->id)
+            ->where('state', 'waiting')
+            ->sum('subtotal');
+
+        // Actualizar el total del carrito
+        $cart->total = $total;
+        $cart->save();
+
         return response()->json([
             'status' => 'success',
             'data' => $cart
@@ -87,21 +80,25 @@ class CartController extends Controller
 }
 
 
+
     public function quitItem(Request $request, $id)
     {
         try {
             // Eliminar el ítem del carrito de la biblioteca Cart
-            \Cart::remove($id);
+
 
             // Eliminar el registro correspondiente en `products_cart`
-            ProductsCart::where('cart_id', Cart::where('client_id', 1)->value('id'))
+            ProductsCart::where('cart_id', Cart::where('client_id', 2)->value('id'))
                         ->where('product_id', $id)->where('state', 'waiting')
                         ->delete();
+                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 2)->value('id'))->where('state', 'waiting')
+                        ->sum('subtotal');
+
 
             // Actualizar el total del carrito
-            $cart = Cart::where('client_id', 1)->first();
+            $cart = Cart::where('client_id', 2)->first();
             if ($cart) {
-                $cart->total = \Cart::getSubTotal();
+                $cart->total = $total;
                 $cart->save();
             }
 
