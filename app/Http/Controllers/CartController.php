@@ -102,7 +102,10 @@ class CartController extends Controller
                 $cart->save();
             }
 
-            return redirect()->route('cart.get')->with('success', 'Producto eliminado correctamente.');
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sell deleted successfully'
+            ], 200);
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Hubo un problema al eliminar el producto: ' . $e->getMessage()]);
         }
@@ -117,7 +120,7 @@ class CartController extends Controller
         // }
     
         // Obtener el carrito del cliente
-        $cart = Cart::where('client_id', 1)->first();
+        $cart = Cart::where('client_id', 2)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }
@@ -164,7 +167,7 @@ class CartController extends Controller
         // }
     
         // Obtener el carrito del cliente
-        $cart = Cart::where('client_id', 1)->first();
+        $cart = Cart::where('client_id', 2)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }
@@ -178,7 +181,7 @@ class CartController extends Controller
         // Buscar el producto en el carrito con estado 'waiting'
         $productCart = ProductsCart::where('cart_id', $cart->id)
             ->where('product_id', $id)
-            ->where('state', 'waiting')
+            ->where('state', 'waiting')->where('quantity', '>', 1)
             ->first();
     
         if (!$productCart) {
@@ -195,5 +198,34 @@ class CartController extends Controller
         $cart->save();
     
         return response()->json(['status' => 'success', 'data' => $cart], 200);
+    }
+    
+    public function clear(Request $request, $id)
+    {
+        try {
+            // Eliminar el ítem del carrito de la biblioteca Cart
+
+
+            // Eliminar el registro correspondiente en `products_cart`
+            ProductsCart::where('cart_id', Cart::where('client_id', 2))->where('state', 'waiting')
+                        ->delete();
+                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 2)->value('id'))->where('state', 'waiting')
+                        ->sum('subtotal');
+
+
+            // Actualizar el total del carrito
+            $cart = Cart::where('client_id', 2)->first();
+            if ($cart) {
+                $cart->total = $total;
+                $cart->save();
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sell deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Hubo un problema al eliminar el producto: ' . $e->getMessage()]);
+        }
     }
 }
