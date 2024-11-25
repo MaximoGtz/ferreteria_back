@@ -43,3 +43,4 @@ Route::prefix('cart')->group(function () {
     Route::put('/{id}/less', [CartController::class, 'less']);
     Route::delete('/clear', [CartController::class, 'clear']);
 });
+

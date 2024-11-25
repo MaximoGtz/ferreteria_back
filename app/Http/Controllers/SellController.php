@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sell;
+use App\Models\ProductsCart;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 
@@ -22,9 +23,14 @@ class SellController extends Controller
         $sell = Sell::create($validated);
 
         // Aquí también puedes actualizar el estado del carrito si lo deseas
-        $cart = Cart::find($request->cart_id);
-        $cart->status = 'sold';  // Cambiar el estado del carrito si lo necesitas
-        $cart->save();
+        $cartItems = ProductsCart::where('state', 'waiting')
+        ->where('cart_id', $request->cart_id)
+        ->get(); 
+
+        foreach ($cartItems as $cartItem) {
+        $cartItem->state = 'sell';  // Cambiar el estado del carrito si lo necesitas
+        $cartItem->save();  // Guardar cada uno de los cambios  
+        }
 
         return response()->json([
             'status' => 'success',
@@ -72,7 +78,6 @@ class SellController extends Controller
             ], 404);
         }
 
-        $sell->producto_cart()->delete();  // Eliminar productos relacionados
         $sell->delete();  // Eliminar la venta
 
         return response()->json([
