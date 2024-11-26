@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
@@ -49,6 +50,10 @@ class UserController extends Controller
             $user->image = $rutaCompleta;
             $user->save();
         }
+        $cart = Cart::firstOrCreate(
+            ['client_id' => $user->id], // Cambiar este ID por el del cliente autenticado
+            ['total' => 0]
+        );
 
         return response()->json($user, 201);
     }

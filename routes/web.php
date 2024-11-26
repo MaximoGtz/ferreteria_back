@@ -18,14 +18,8 @@ Route::get('/cart', [ProductController::class, 'index'])->name('cart.index');
 // Ruta para agregar productos al carrito
 
 // Ruta para obtener productos en el carrito
-Route::get('/get/cart', [CartController::class, 'get'])->name('cart.get');
+Route::get('/mi-vista', [CartController::class, 'get']);
 
 Route::get('/product/show/{id}',[ProductController::class,'show']);
 
-Route::post('/add/cart', [CartController::class, 'add'])->name('cart.add');
-Route::post('/quit/cart/{id}', [CartController::class, 'quitItem'])->name('cart.quit');
-Route::post('/more/cart/{id}', [CartController::class, 'more'])->name('cart.more');
-Route::post('/less/cart/{id}', [CartController::class, 'less'])->name('cart.less');
-Route::post('/clear/cart', [CartController::class, 'clear'])->name('cart.clear');
-Route::post('/sell', [SellController::class, 'store'])->name('cart.sell');
 

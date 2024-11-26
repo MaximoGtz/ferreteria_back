@@ -9,23 +9,28 @@ use App\Models\ProductsCart;
 
 class CartController extends Controller
 {
-    public function get()
+    public function get(Request $request)
     {
         $cart = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'waiting')->with('producto');
-        }])->get();
-    
+        }])->where('client_id', 3)->get();
+        
         if (!$cart) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Carrito no encontrado'
             ], 404);
         }
-    
-        return response()->json([
-            'status' => 'success',
-            'data' => $cart
-        ], 200);
+        
+        // Si la solicitud pide JSON, devuelve los datos como JSON.
+        if ($request->wantsJson()) {
+            return response()->json($cart);
+        }
+        
+        // Pasa los datos del carrito a la vista.
+        return view('cart.add_cart')->with('cart', $cart);
+        
+
     }
     public function show()
     {
@@ -59,7 +64,7 @@ class CartController extends Controller
 
         // Obtener o crear un carrito asociado al cliente
         $cart = Cart::firstOrCreate(
-            ['client_id' => 2], // Cambiar este ID por el del cliente autenticado
+            ['client_id' => 3], // Cambiar este ID por el del cliente autenticado
             ['total' => 0]
         );
 
@@ -68,6 +73,8 @@ class CartController extends Controller
             ->where('product_id', $request->id)
             ->where('state', 'waiting') // Solo productos en estado "waiting"
             ->first();
+            
+            
 
         if ($productCart) {
             // Si ya existe, incrementar la cantidad y el subtotal
