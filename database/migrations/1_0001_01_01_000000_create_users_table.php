@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('phone')->nullable();
             $table->string('google_id')->nullable();
             $table->string('rfc')->nullable()->unique(); // `rfc` es opcional y único
-            $table->enum('rol', ['1', '2', '3'])->default('1');
+            $table->enum('role', ['client', 'admin', 'employe'])->default('client');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
