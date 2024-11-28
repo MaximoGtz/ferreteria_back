@@ -31,7 +31,7 @@ class SellController extends Controller
         $cartItem->state = 'sell';  // Cambiar el estado del carrito si lo necesitas
         $cartItem->save();  // Guardar cada uno de los cambios  
         }
-        $cart = Cart::where('client_id', 2)->first();
+        $cart = Cart::where('client_id', 3)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }

@@ -6,14 +6,24 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductsCart;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 class CartController extends Controller
+// implements HasMiddleware
 {
+    // public static function middleware()
+    // {
+    //         return [
+    //                 new Middleware('auth:sanctum')
+    //             ];
+    //         }
     public function get(Request $request)
     {
+        $user = $request->user();
         $cart = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'waiting')->with('producto');
-        }])->where('client_id', 3)->get();
+        }])->where('client_id', $user->id)->get();
         
         if (!$cart) {
             return response()->json([
@@ -32,11 +42,11 @@ class CartController extends Controller
         
 
     }
-    public function show()
+    public function show($id)
     {
         $cart = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'waiting')->with('producto');
-        }])->where('client_id', 2)->get();
+        }])->where('client_id', $id)->get();
     
         if (!$cart) {
             return response()->json([
@@ -121,15 +131,15 @@ class CartController extends Controller
 
 
             // Eliminar el registro correspondiente en `products_cart`
-            ProductsCart::where('cart_id', Cart::where('client_id', 2)->value('id'))
+            ProductsCart::where('cart_id', Cart::where('client_id', 3)->value('id'))
                         ->where('product_id', $id)->where('state', 'waiting')
                         ->delete();
-                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 2)->value('id'))->where('state', 'waiting')
+                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 3)->value('id'))->where('state', 'waiting')
                         ->sum('subtotal');
 
 
             // Actualizar el total del carrito
-            $cart = Cart::where('client_id', 2)->first();
+            $cart = Cart::where('client_id', 3)->first();
             if ($cart) {
                 $cart->total = $total;
                 $cart->save();
@@ -153,7 +163,7 @@ class CartController extends Controller
         // }
     
         // Obtener el carrito del cliente
-        $cart = Cart::where('client_id', 2)->first();
+        $cart = Cart::where('client_id', 3)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }
@@ -200,7 +210,7 @@ class CartController extends Controller
         // }
     
         // Obtener el carrito del cliente
-        $cart = Cart::where('client_id', 2)->first();
+        $cart = Cart::where('client_id', 3)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }
@@ -240,14 +250,14 @@ class CartController extends Controller
 
 
             // Eliminar el registro correspondiente en `products_cart`
-            ProductsCart::where('cart_id', Cart::where('client_id', 2))->where('state', 'waiting')
+            ProductsCart::where('cart_id', Cart::where('client_id', 3))->where('state', 'waiting')
                         ->delete();
-                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 2)->value('id'))->where('state', 'waiting')
+                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 3)->value('id'))->where('state', 'waiting')
                         ->sum('subtotal');
 
 
             // Actualizar el total del carrito
-            $cart = Cart::where('client_id', 2)->first();
+            $cart = Cart::where('client_id', 3)->first();
             if ($cart) {
                 $cart->total = $total;
                 $cart->save();

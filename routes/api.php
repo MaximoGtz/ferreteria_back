@@ -37,7 +37,7 @@ Route::prefix('sells')->group(function () {
 
 Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'get']);
-    Route::get('/client', [CartController::class, 'show']);
+    Route::get('/client/{id}', [CartController::class, 'show']);
     Route::post('/add', [CartController::class, 'add']);
     Route::delete('/{id}', [CartController::class, 'quitItem']);
     Route::put('/{id}/more', [CartController::class, 'more']);
