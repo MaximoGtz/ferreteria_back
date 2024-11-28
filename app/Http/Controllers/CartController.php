@@ -23,7 +23,7 @@ class CartController extends Controller
         $user = $request->user();
         $cart = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'waiting')->with('producto');
-        }])->where('client_id', $user->id)->get();
+        }])->where('client_id', 3)->get();
         
         if (!$cart) {
             return response()->json([

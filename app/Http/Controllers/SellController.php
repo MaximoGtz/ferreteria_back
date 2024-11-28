@@ -29,6 +29,7 @@ class SellController extends Controller
 
         foreach ($cartItems as $cartItem) {
         $cartItem->state = 'sell';  // Cambiar el estado del carrito si lo necesitas
+        $cartItem->sell_id = $sell->id;
         $cartItem->save();  // Guardar cada uno de los cambios  
         }
         $cart = Cart::where('client_id', 3)->first();
@@ -63,9 +64,9 @@ class SellController extends Controller
     {
         $sells = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'sell')->with('producto');
-        }])->find($id);
+        }])->where('client_id', $id)->get();
 
-        if (!$sell) {
+        if (!$sells) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Sell not found'
@@ -74,7 +75,7 @@ class SellController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $sell
+            'data' => $sells
         ], 200);
     }
 

@@ -9,7 +9,7 @@ class ProductsCart extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'cart_id', 'product_id', 'quantity', 'subtotal', 'state'
+        'cart_id', 'product_id', 'quantity', 'subtotal', 'state', 'sell_id'
     ];
     public function cart()
     {
@@ -19,5 +19,9 @@ class ProductsCart extends Model
     public function producto()
 {
     return $this->belongsTo(Product::class, 'product_id'); // Ajusta el campo si es necesario
+}
+public function sell()
+{
+    return $this->belongsTo(Sell::class);
 }
 }

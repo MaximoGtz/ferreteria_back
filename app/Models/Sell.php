@@ -19,5 +19,10 @@ public function client()
 {
     return $this->belongsTo(User::class, 'client_id');
 }
+public function product_cart()
+{
+    return $this->hasMany(product_cart::class, 'client_id');
+}
+
 
 }
