@@ -11,6 +11,7 @@ class SellController extends Controller
     // Crear una venta
     public function store(Request $request)
     {
+        $client_id = $request->input('client_id');
         $validated = $request->validate([
             'cart_id' => 'required|exists:carts,id',
             'client_id' => 'required|exists:users,id',
@@ -32,7 +33,7 @@ class SellController extends Controller
         $cartItem->sell_id = $sell->id;
         $cartItem->save();  // Guardar cada uno de los cambios  
         }
-        $cart = Cart::where('client_id', 3)->first();
+        $cart = Cart::where('client_id', $client_id)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }

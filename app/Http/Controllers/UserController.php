@@ -72,13 +72,13 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $fields = $request->validate([
-            'name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'image' => 'nullable|image|max:1024',
-            'email' => 'email|unique:users,email,' . $user->id . '|max:255',
-            'phone' => 'string|max:255',
+            'name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'image' => 'nullable|max:1024',
+            'email' => 'nullable|email|unique:users,email,' . $user->id . '|max:255',
+            'phone' => 'nullable|string|max:255',
             'rfc' => 'nullable|string|max:255',
-            'role' => 'string|max:255',
+            'role' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:6',
         ]);
 

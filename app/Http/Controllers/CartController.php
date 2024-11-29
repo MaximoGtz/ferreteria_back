@@ -20,12 +20,19 @@ class CartController extends Controller
     //         }
     public function get(Request $request)
     {
-        $user = $request->user();
+        // $user = $request->user();
+        $client_id = $request->input('client_id');
+        if (!$client_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El campo client_id es obligatorio.'
+            ], 400);
+        }
         $cart = Cart::with(['client', 'producto_cart' => function ($query) {
             $query->where('state', 'waiting')->with('producto');
-        }])->where('client_id', 3)->get();
+        }])->where('client_id', $client_id)->get();
         
-        if (!$cart) {
+        if ($cart->isEmpty()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Carrito no encontrado'
@@ -48,7 +55,7 @@ class CartController extends Controller
             $query->where('state', 'waiting')->with('producto');
         }])->where('client_id', $id)->get();
     
-        if (!$cart) {
+        if ($cart->isEmpty()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Carrito no encontrado'
@@ -64,6 +71,7 @@ class CartController extends Controller
 
     public function add(Request $request)
 {
+    $client_id = $request->input('client_id');
     try {
         // Validar los datos del formulario
         $request->validate([
@@ -74,7 +82,7 @@ class CartController extends Controller
 
         // Obtener o crear un carrito asociado al cliente
         $cart = Cart::firstOrCreate(
-            ['client_id' => 3], // Cambiar este ID por el del cliente autenticado
+            ['client_id' => $client_id], // Cambiar este ID por el del cliente autenticado
             ['total' => 0]
         );
 
@@ -126,20 +134,21 @@ class CartController extends Controller
 
     public function quitItem(Request $request, $id)
     {
+        $client_id = $request->input('client_id');
         try {
             // Eliminar el ítem del carrito de la biblioteca Cart
 
 
             // Eliminar el registro correspondiente en `products_cart`
-            ProductsCart::where('cart_id', Cart::where('client_id', 3)->value('id'))
+            ProductsCart::where('cart_id', Cart::where('client_id', $client_id)->value('id'))
                         ->where('product_id', $id)->where('state', 'waiting')
                         ->delete();
-                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 3)->value('id'))->where('state', 'waiting')
+                        $total=ProductsCart::where('cart_id', Cart::where('client_id', $client_id)->value('id'))->where('state', 'waiting')
                         ->sum('subtotal');
 
 
             // Actualizar el total del carrito
-            $cart = Cart::where('client_id', 3)->first();
+            $cart = Cart::where('client_id', $client_id)->first();
             if ($cart) {
                 $cart->total = $total;
                 $cart->save();
@@ -156,6 +165,7 @@ class CartController extends Controller
 
     public function more(Request $request, $id)
     {
+        $client_id = $request->input('client_id');
         // Obtener el ID del cliente autenticado
         // $clientId = auth()->id();
         // if (!$clientId) {
@@ -163,14 +173,14 @@ class CartController extends Controller
         // }
     
         // Obtener el carrito del cliente
-        $cart = Cart::where('client_id', 3)->first();
-        if (!$cart) {
+        $cart = Cart::where('client_id', $client_id)->first();
+        if (!$cart->isEmpty()) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }
     
         // Verificar si el producto existe en la base de datos
         $product = Product::find($id);
-        if (!$product) {
+        if (!$product->isEmpty()) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado.'], 404);
         }
     
@@ -203,14 +213,16 @@ class CartController extends Controller
 
     public function less(Request $request, $id)
     {
+        $client_id = $request->input('client_id');
    // Obtener el ID del cliente autenticado
+   
         // $clientId = auth()->id();
         // if (!$clientId) {
         //     return response()->json(['status' => 'error', 'message' => 'Usuario no autenticado.'], 401);
         // }
     
         // Obtener el carrito del cliente
-        $cart = Cart::where('client_id', 3)->first();
+        $cart = Cart::where('client_id', $client_id)->first();
         if (!$cart) {
             return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado para este cliente.'], 404);
         }
