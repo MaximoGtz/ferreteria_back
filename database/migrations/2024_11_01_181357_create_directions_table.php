@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('state', 100);
             $table->string('city', 100);
+            $table->string('residence', 100);
+            $table->string('name', 100);
             $table->integer('postal_code');
             $table->string('description', 100);
             $table->timestamps();
