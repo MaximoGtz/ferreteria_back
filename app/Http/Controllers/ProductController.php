@@ -13,7 +13,7 @@ class ProductController extends Controller
     
     public function index(Request $request)
     {
-        $products = Product::with(['images', 'category', 'brand'])->get();
+        $products = Product::with(['images', 'category', 'brand', 'comments'])->get();
         //dd($products);
         if ($request->wantsJson()) {
             return response()->json($products);
@@ -102,7 +102,7 @@ class ProductController extends Controller
 
 public function show($id)
 {
-    $product = Product::with(['images', 'category', 'brand'])->findOrFail($id);
+    $product = Product::with(['images', 'category', 'brand' , 'comments'])->findOrFail($id);
      return response()->json($product);
     if ($product) {
         // Pasar el producto a la vista

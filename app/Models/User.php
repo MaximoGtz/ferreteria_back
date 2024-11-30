@@ -61,4 +61,8 @@ public function sells()
 {
     return $this->hasMany(Sell::class);
 }
+public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
 }

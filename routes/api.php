@@ -8,7 +8,7 @@ use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SellController;
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,3 +45,5 @@ Route::prefix('cart')->group(function () {
 });
 // Route::delete('/clear', [CartController::class, 'clear']);
 
+Route::get('comment/{productId}', [CommentController::class, 'getProductRating']);
+Route::post('comment/', [CommentController::class, 'store']);

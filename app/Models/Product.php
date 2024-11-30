@@ -33,5 +33,9 @@ public function productsCart()
 {
     return $this->hasMany(ProductsCart::class);
 }
+public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
 }
 

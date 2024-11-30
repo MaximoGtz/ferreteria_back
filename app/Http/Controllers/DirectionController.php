@@ -53,7 +53,7 @@ class DirectionController extends Controller
         ]);
         
         $direction->update($fields);
-
+ 
         return response()->json($direction);
     }
 
