@@ -51,7 +51,7 @@ class User extends Authenticatable
      */
     public function directions()
     {
-        return $this->hasOne(Direction::class); 
+        return $this->hasMany(Direction::class); 
     }
     public function cart()
 {
