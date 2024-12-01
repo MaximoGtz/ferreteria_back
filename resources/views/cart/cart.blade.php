@@ -24,6 +24,7 @@
                         <form action="api/cart/add" method="post">
                             @csrf
                             <input type="hidden" name="id" value="{{ $item->id }}">
+                            <input type="hidden" name="client_id" value="3">
                             <input type="hidden" name="price" value="{{ $item->sell_price }}">
                             <input type="hidden" name="quantity" value="1">
                           

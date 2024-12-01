@@ -255,29 +255,35 @@ class CartController extends Controller
         return response()->json(['status' => 'success', 'data' => $cart], 200);
     }
     
-    public function clear(Request $request, $id)
+    public function clear(Request $request)
     {
+        $client_id = $request->input('client_id');
         try {
             // Eliminar el ítem del carrito de la biblioteca Cart
 
 
             // Eliminar el registro correspondiente en `products_cart`
-            ProductsCart::where('cart_id', Cart::where('client_id', 3))->where('state', 'waiting')
+            ProductsCart::where('cart_id', Cart::where('client_id', $client_id)->value('id'))->where('state', 'waiting')
                         ->delete();
-                        $total=ProductsCart::where('cart_id', Cart::where('client_id', 3)->value('id'))->where('state', 'waiting')
+                        $total=ProductsCart::where('cart_id', Cart::where('client_id', $client_id)->value('id'))->where('state', 'waiting')
                         ->sum('subtotal');
 
 
             // Actualizar el total del carrito
-            $cart = Cart::where('client_id', 3)->first();
+            $cart = Cart::where('client_id', $client_id)->first();
             if ($cart) {
-                $cart->total = $total;
+                $cart->total = 0;
                 $cart->save();
             }
-
+if(!$cart){
+    return response()->json([
+        'status' => 'success',
+        'message' => 'cart not found'
+    ], 404);
+}
             return response()->json([
                 'status' => 'success',
-                'message' => 'Sell deleted successfully'
+                'message' => 'cart deleted successfully'
             ], 200);
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Hubo un problema al eliminar el producto: ' . $e->getMessage()]);

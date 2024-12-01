@@ -49,7 +49,8 @@ Route::prefix('cart')->group(function () {
     Route::put('/{id}/more', [CartController::class, 'more']);
     Route::put('/{id}/less', [CartController::class, 'less']);
 });
-// Route::delete('/clear', [CartController::class, 'clear']);
+Route::delete('/clear', [CartController::class, 'clear']);
+ Route::delete('/clear', [CartController::class, 'clear']);
 
 Route::get('comment/{productId}', [CommentController::class, 'getProductRating']);
 Route::post('comment/', [CommentController::class, 'store']);
