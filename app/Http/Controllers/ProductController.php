@@ -129,4 +129,35 @@ public function show($id)
 
     return response()->json(['message' => 'Producto eliminado']);
 }
+
+
+public function searchname($search)
+{
+    try {
+        // Realizar la búsqueda por nombre, categoría (por nombre) y marca
+        $product = Product::with(['images', 'category', 'brand'])
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->join('brands', 'brands.id', '=', 'products.brand_id') // Join con la tabla 'categories'
+            ->where(function ($query) use ($search) {
+                // Buscar por nombre del producto, nombre de la categoría, o nombre de la marca
+                $query->where('products.name', 'like', '%' . $search . '%')
+                      ->orWhere('categories.name', 'like', '%' . $search . '%') // Buscar en el nombre de la categoría
+                      ->orWhere('brands.name', 'like', '%' . $search . '%');
+            })
+            ->select('products.*') // Asegurarse de seleccionar solo los campos de la tabla 'products'
+            ->get(); // Esto lanza una excepción si no se encuentra el producto
+
+        return response()->json($product);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        // Si no se encuentra el producto, se lanza una excepción de tipo 404
+        throw new NotFoundHttpException("No se encontró el producto con el identificador o nombre: " . $search);
+    }
+
+}
+
+   
+    
+
+
+
 }

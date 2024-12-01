@@ -19,9 +19,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('products', ProductController::class);
+Route::apiResource('products', ProductController::class);
 Route::apiResource('brands', BrandController::class);
 Route::apiResource('directions', DirectionController::class);
 Route::apiResource('users', UserController::class);
+
+
+Route::get('/search/product/{search}', [ProductController::class, 'searchname']);
+
+
 // Route::post
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
