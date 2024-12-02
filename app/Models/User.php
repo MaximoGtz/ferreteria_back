@@ -24,6 +24,7 @@ class User extends Authenticatable
         'rfc',
         'password',
         'role',
+        'google_id',
     ];
 
     /**

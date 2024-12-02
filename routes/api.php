@@ -8,9 +8,13 @@ use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SellController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use App\Models\Cart;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -50,7 +54,38 @@ Route::prefix('cart')->group(function () {
     Route::put('/{id}/less', [CartController::class, 'less']);
 });
 Route::delete('/clear', [CartController::class, 'clear']);
- Route::delete('/clear', [CartController::class, 'clear']);
+Route::delete('/clear', [CartController::class, 'clear']);
 
 Route::get('comment/{productId}', [CommentController::class, 'getProductRating']);
 Route::post('comment/', [CommentController::class, 'store']);
+
+Route::get('/auth/google/redirect', function () {
+    return Socialite::driver('google')->stateless()->redirect();
+});
+
+Route::get('/auth/google/callback', function () {
+    $googleUser = Socialite::driver('google')->stateless()->user();
+
+    $user = User::updateOrCreate(
+        ['google_id' => $googleUser->id],
+        [
+            'name' => $googleUser->name,
+            'email' => $googleUser->email,
+            'image' => $googleUser->avatar,
+        ]
+    );
+
+    $token = $user->createToken($user->name)->plainTextToken;
+
+    return response()->json([
+        "user" => $user,
+        "token" => $token
+    ]);
+});
+
+// ! RUTAS DE API EN PRUEBAS
+
+Route::post('cart/paypal/create', [CartController::class, 'createPaypalOrder']);
+Route::get('paypal/return', [CartController::class, 'paypalReturn']);
+Route::get('paypal/cancel', [CartController::class, 'paypalCancel']);
+

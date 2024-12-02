@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\ProductsCart;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 
 class CartController extends Controller
 // implements HasMiddleware
@@ -288,5 +290,79 @@ if(!$cart){
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Hubo un problema al eliminar el producto: ' . $e->getMessage()]);
         }
+    }
+
+
+    public function createPaypalOrder(Request $request)
+    {
+        $client_id = $request->input('client_id');
+        $cart = Cart::with(['producto_cart' => function ($query) {
+            $query->where('state', 'waiting')->with('producto');
+        }])->where('client_id', $client_id)->first();
+
+        if (!$cart) {
+            return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado'], 404);
+        }
+
+        // Calcular el total del carrito (sólo los productos en estado 'waiting')
+        $total = ProductsCart::where('cart_id', $cart->id)->where('state', 'waiting')->sum('subtotal');
+
+        // Si el carrito está vacío
+        if ($total <= 0) {
+            return response()->json(['status' => 'error', 'message' => 'El carrito está vacío'], 400);
+        }
+
+        // Obtener la configuración de PayPal
+        $paypal_client_id = Config::get('services.paypal.client_id');
+        $paypal_secret = Config::get('services.paypal.secret');
+        $paypal_url = "https://api-m.sandbox.paypal.com/v2/checkout/orders";
+
+        // Crear la solicitud de pago a PayPal
+        $response = Http::withBasicAuth($paypal_client_id, $paypal_secret)
+            ->post($paypal_url, [
+                'intent' => 'CAPTURE',
+                'purchase_units' => [
+                    [
+                        'amount' => [
+                            'currency_code' => 'USD', // O la moneda que uses
+                            'value' => $total
+                        ],
+                        'description' => 'Compra de productos en tu carrito'
+                    ]
+                ],
+                'application_context' => [
+                    'return_url' => url('/api/paypal/return'),
+                    'cancel_url' => url('/api/paypal/cancel')
+                ]
+            ]);
+
+        // Verificar la respuesta de PayPal
+        if ($response->failed()) {
+            return response()->json(['status' => 'error', 'message' => 'Error al crear la orden de PayPal'], 500);
+        }
+
+        // Devolver el ID de la orden o el enlace a PayPal
+        $paypal_order = $response->json();
+
+        return response()->json([
+            'status' => 'success',
+            'order_id' => $paypal_order['id'],
+            'paypal_url' => $paypal_order['links'][1]['href'] // URL para redirigir al usuario a PayPal
+        ], 200);
+    }
+
+    // Método para manejar la respuesta exitosa de PayPal (cuando el usuario paga)
+    public function paypalReturn(Request $request)
+    {
+        // Aquí manejarías la confirmación de la transacción si el pago fue exitoso
+        // Podrías verificar el pago con PayPal usando el 'order_id' o 'token' devuelto.
+        return response()->json(['status' => 'success', 'message' => 'Pago realizado con éxito']);
+    }
+
+    // Método para manejar la cancelación de PayPal (cuando el usuario cancela el pago)
+    public function paypalCancel(Request $request)
+    {
+        // Aquí manejarías si el usuario cancela el pago
+        return response()->json(['status' => 'error', 'message' => 'Pago cancelado por el usuario']);
     }
 }
