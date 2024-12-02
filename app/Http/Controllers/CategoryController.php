@@ -7,21 +7,22 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-// se usa implements HasMiddleware y la funcion middleware para proteger las funciones de los usuarios que no están registrados, necesita el barrelToken para poder entrar a la funcion
-class CategoryController extends Controller implements HasMiddleware
+class CategoryController extends Controller 
+// implements HasMiddleware
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public static function middleware()
-    {
-        return [
-            new Middleware('auth:sanctum', except: ['index', 'show'])
-        ];
-    }
+    // public static function middleware()
+    // {
+        //     return [
+            //         new Middleware('auth:sanctum', except: ['index', 'show'])
+            //     ];
+            // }
+            
+            /**
+             * Display a listing of the resource.
+             */
     public function index()
     {
-        return Category::all();
+        return Category::with('products')->get(); // Carga las categorías y los productos
     }
 
     /**
@@ -32,11 +33,14 @@ class CategoryController extends Controller implements HasMiddleware
         $fields = $request->validate([
             'name' => 'required|max:255|unique:categories',
             'description' => 'required',
+            'tags' => 'required',
         ]);
-        $category = Category::create(($fields));
-        // return 'Ok';
-        return ['category' => $category];
 
+        // Crear la categoría
+        $category = Category::create($fields);
+
+
+        return response()->json($category, 201);
     }
 
     /**
@@ -44,8 +48,7 @@ class CategoryController extends Controller implements HasMiddleware
      */
     public function show(Category $category)
     {
-        return $category;
-
+        return $category->load('products'); 
     }
 
     /**
@@ -54,12 +57,14 @@ class CategoryController extends Controller implements HasMiddleware
     public function update(Request $request, Category $category)
     {
         $fields = $request->validate([
-            'name' => 'required|max:255|unique:categories',
+            'name' => 'required|max:255|unique:categories,name,' . $category->id, 
             'description' => 'required',
+            'tags' => 'required',
         ]);
+        
         $category->update($fields);
-        // return 'Ok';
-        return $category;
+
+        return response()->json($category);
     }
 
     /**
@@ -69,6 +74,6 @@ class CategoryController extends Controller implements HasMiddleware
     {
         $category->delete();
 
-        return ['message' => 'Category has been eliminated'];
+        return response()->json(['message' => 'Category has been eliminated']);
     }
 }
