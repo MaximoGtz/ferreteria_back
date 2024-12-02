@@ -9,62 +9,63 @@ use Illuminate\Http\Request;
 class SellController extends Controller
 {
     // Crear una venta
-    public function store(Request $request)
-{
-    // Validación de los campos de la solicitud
-    $validated = $request->validate([
-        'cart_id' => 'required|exists:carts,id',
-        'client_id' => 'required|exists:users,id',
-        'direction_id' => 'required|exists:directions,id',
-        'purchase_method' => 'nullable|string',
-    ]);
+    public function store(Request $request, $id)
+    {
+        // Validación de los campos de la solicitud
+        $validated = $request->validate([
+            'direction_id' => 'required|exists:directions,id',
+            'purchase_method' => 'nullable|string',
+        ]);
 
-    // Obtener el carrito de acuerdo al cart_id recibido
-    $cart = Cart::find($request->cart_id);
+        // Obtener el carrito del cliente
+        $cart = Cart::where('client_id', $id) // Considerando solo carritos activos
+                    ->first();
 
-    if (!$cart) {
-        return response()->json(['status' => 'error', 'message' => 'Carrito no encontrado.'], 404);
+        if (!$cart) {
+            return response()->json(['status' => 'error', 'message' => 'No se encontró un carrito activo para este cliente.'], 404);
+        }
+
+        // Calcular el total del carrito sumando los subtotales de los productos en el carrito
+        $total = ProductsCart::where('cart_id', $cart->id)
+                             ->where('state', 'waiting') // Solo productos en estado "waiting"
+                             ->sum('subtotal');
+
+        // Agregar el IVA al total
+        $iva = $total * 0.16;
+        $totalConIva = $total + $iva;
+
+        // Crear la venta con el total calculado y los datos proporcionados
+        $sell = Sell::create([
+            'cart_id' => $cart->id,
+            'client_id' => $id,
+            'direction_id' => $request->direction_id,
+            'total' => $totalConIva, // Guardar el total con IVA
+            'iva' => $iva,
+            'purchase_method' => $request->purchase_method,
+        ]);
+
+        // Actualizar el estado de los productos en el carrito
+        $cartItems = ProductsCart::where('state', 'waiting')
+                                 ->where('cart_id', $cart->id)
+                                 ->get();
+
+        foreach ($cartItems as $cartItem) {
+            $cartItem->state = 'sell';  // Cambiar el estado de "waiting" a "sell"
+            $cartItem->sell_id = $sell->id; // Asociar el producto con la venta
+            $cartItem->save();
+        }
+
+        // Actualizar el estado y total del carrito
+        $cart->total = $total; // Guardar el total (sin IVA si así lo deseas)
+        $cart->save();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $sell
+        ], 201);
     }
 
-    // Calcular el total del carrito sumando los subtotales de los productos en el carrito
-    $total = ProductsCart::where('cart_id', $request->cart_id)
-                         ->where('state', 'waiting') // Solo productos en estado "waiting"
-                         ->sum('subtotal');
-
-    // Agregar el IVA al total (si es necesario, ajusta la lógica según cómo se deba calcular)
-    $iva = $total * 0.16;
-    $totalConIva = $total + $iva;
-
-    // Crear la venta con el total calculado y los datos proporcionados
-    $sell = Sell::create([
-        'cart_id' => $request->cart_id,
-        'client_id' => $request->client_id,
-        'direction_id' => $request->direction_id,
-        'total' => $totalConIva, // Guardar el total con IVA
-        'iva' => $iva,
-        'purchase_method' => $request->purchase_method,
-    ]);
-
-    // Aquí puedes actualizar el estado de los productos en el carrito
-    $cartItems = ProductsCart::where('state', 'waiting')
-                             ->where('cart_id', $request->cart_id)
-                             ->get();
-
-    foreach ($cartItems as $cartItem) {
-        $cartItem->state = 'sell';  // Cambiar el estado de "waiting" a "sell"
-        $cartItem->sell_id = $sell->id; // Asociar el producto con la venta
-        $cartItem->save();
-    }
-
-    // Actualizar el total del carrito (aunque ya se calculó al principio, se puede hacer como validación)
-    $cart->total = $total; // Si deseas actualizar el total sin IVA
-    $cart->save();
-
-    return response()->json([
-        'status' => 'success',
-        'data' => $sell
-    ], 201);
-}
+    // Mostrar todas las ventas
 
 
     // Mostrar todas las ventas
