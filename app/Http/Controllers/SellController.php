@@ -87,10 +87,10 @@ class SellController extends Controller
             $query->where('state', 'sell')->with('producto');
         }])->where('client_id', $id)->get();
 
-        if (!$sells) {
+        if ($sells->isEmpty()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Sell not found'
+                'message' => 'user not found'
             ], 404);
         }
 
