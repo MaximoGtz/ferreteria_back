@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('cart_id');
             $table->foreign('cart_id')->references('id')->on('carts')->onDelete('cascade');
+            $table->unsignedBigInteger('direction_id');
+            $table->foreign('direction_id')->references('id')->on('directions')->onDelete('cascade');
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('users')->onDelete('cascade');
             $table->decimal('total', 10, 2 );
