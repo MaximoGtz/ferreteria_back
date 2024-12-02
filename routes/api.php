@@ -64,6 +64,10 @@ Route::get('/auth/google/redirect', function () {
     return Socialite::driver('google')->stateless()->redirect();
 });
 
+Route::get('/normalcomment', [ContactController::class, 'getContacts']);
+Route::get('/normalcomment/{id}', [ContactController::class, 'getContact']);
+Route::post('/normalcomment', [ContactController::class, 'store']);
+
 Route::get('/auth/google/callback', function () {
     $googleUser = Socialite::driver('google')->stateless()->user();
 
