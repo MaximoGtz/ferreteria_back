@@ -41,7 +41,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::prefix('sells')->group(function () {
     Route::get('/', [SellController::class, 'index']);        // Obtener todas las ventas
     Route::get('/{id}', [SellController::class, 'show']);     // Obtener una venta específica
-    Route::post('/', [SellController::class, 'store']);       // Crear una nueva venta
+    Route::post('/{id}', [SellController::class, 'store']);       // Crear una nueva venta
     Route::delete('/{id}', [SellController::class, 'destroy']); // Eliminar una venta específica
 });
 
@@ -53,6 +53,7 @@ Route::prefix('cart')->group(function () {
     Route::put('/{id}/more', [CartController::class, 'more']);
     Route::put('/{id}/less', [CartController::class, 'less']);
 });
+
 Route::delete('/clear', [CartController::class, 'clear']);
 Route::delete('/clear', [CartController::class, 'clear']);
 
