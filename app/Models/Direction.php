@@ -17,6 +17,8 @@ class Direction extends Model
         'name',
         'residence',
         'description',
+        'residence',
+        'name'
     ];
 
     public function user()
