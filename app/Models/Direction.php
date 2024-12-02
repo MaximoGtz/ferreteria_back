@@ -15,6 +15,8 @@ class Direction extends Model
         'city',
         'postal_code',
         'description',
+        'residence',
+        'name'
     ];
 
     public function user()
