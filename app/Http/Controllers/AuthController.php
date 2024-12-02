@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+
+use App\Models\Cart;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
@@ -25,6 +27,10 @@ class AuthController extends Controller
             'role' => $request->role
 
         ]);
+        $cart = Cart::firstOrCreate(
+            ['client_id' => $user->id], // Cambiar este ID por el del cliente autenticado
+            ['total' => 0]
+        );
         $token = $user->createToken($request->name);
         return [
             "user" => $user,

@@ -8,14 +8,15 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 class CategoryController extends Controller 
-// implements HasMiddleware
+ implements HasMiddleware
 {
-    // public static function middleware()
-    // {
-        //     return [
-            //         new Middleware('auth:sanctum', except: ['index', 'show'])
-            //     ];
-            // }
+    public static function middleware()
+     {
+             
+        return [
+                     new Middleware('auth:sanctum', except: ['index', 'show'])
+                 ];
+             }
             
             /**
              * Display a listing of the resource.

@@ -10,26 +10,24 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    
+    public function index(Request $request)
     {
-        $products = Product::with(['images', 'category', 'brand'])->get();
-        return response()->json($products);
-
+        $products = Product::with(['images', 'category', 'brand', 'comments'])->get();
+        //dd($products);
+        if ($request->wantsJson()) {
+            return response()->json($products);
+        }
+        return view('cart.cart')->with('products', $products);
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         $request->validate([
             'category_id' => 'required|integer|exists:categories,id',
             'name' => 'required|string|max:255',
-            'brand' => 'string|max:100',
             'wholesale_price' => 'numeric',
             'brand_id' => 'required|integer|exists:brands,id',
             'sell_price' => 'required|numeric',
@@ -60,11 +58,6 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
     
-    
-
-    /**
-     * Display the specified resource.
-     */
     public function update(Request $request, $id)
 {
     $request->validate([
@@ -109,8 +102,12 @@ class ProductController extends Controller
 
 public function show($id)
 {
-    $product = Product::with(['images', 'categories', 'brands'])->findOrFail($id);
-    return response()->json($product);
+    $product = Product::with(['images', 'category', 'brand' , 'comments'])->findOrFail($id);
+     return response()->json($product);
+    if ($product) {
+        // Pasar el producto a la vista
+        return view('/products/'.$id)->with('product', $product);
+    }
 }
 
 
@@ -132,4 +129,35 @@ public function show($id)
 
     return response()->json(['message' => 'Producto eliminado']);
 }
+
+
+public function searchname($search)
+{
+    try {
+        // Realizar la búsqueda por nombre, categoría (por nombre) y marca
+        $product = Product::with(['images', 'category', 'brand'])
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->join('brands', 'brands.id', '=', 'products.brand_id') // Join con la tabla 'categories'
+            ->where(function ($query) use ($search) {
+                // Buscar por nombre del producto, nombre de la categoría, o nombre de la marca
+                $query->where('products.name', 'like', '%' . $search . '%')
+                      ->orWhere('categories.name', 'like', '%' . $search . '%') // Buscar en el nombre de la categoría
+                      ->orWhere('brands.name', 'like', '%' . $search . '%');
+            })
+            ->select('products.*') // Asegurarse de seleccionar solo los campos de la tabla 'products'
+            ->get(); // Esto lanza una excepción si no se encuentra el producto
+
+        return response()->json($product);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        // Si no se encuentra el producto, se lanza una excepción de tipo 404
+        throw new NotFoundHttpException("No se encontró el producto con el identificador o nombre: " . $search);
+    }
+
+}
+
+   
+    
+
+
+
 }

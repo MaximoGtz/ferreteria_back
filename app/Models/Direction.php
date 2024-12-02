@@ -14,11 +14,19 @@ class Direction extends Model
         'state',
         'city',
         'postal_code',
+        'name',
+        'residence',
         'description',
+        'residence',
+        'name'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+    public function sell()
+{
+    return $this->hasOne(Sell::class, 'client_id');
+}
 }

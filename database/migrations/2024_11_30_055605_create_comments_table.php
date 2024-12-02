@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('directions', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('state', 100);
-            $table->string('city', 100);
-            $table->string('residence', 100);
-            $table->string('name', 100);
-            $table->integer('postal_code');
-            $table->string('description', 100);
+            $table->integer('rate');
+            $table->string('comment', 200);
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('directions');
+        Schema::dropIfExists('comments');
     }
 };

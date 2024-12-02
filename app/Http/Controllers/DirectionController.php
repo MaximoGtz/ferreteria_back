@@ -8,7 +8,7 @@ class DirectionController extends Controller
 {
     public function index()
     {
-        return Direction::get(); 
+        return Direction::with('user')->get(); 
     }
 
     /**
@@ -20,6 +20,8 @@ class DirectionController extends Controller
             'user_id' => 'required|integer|exists:users,id',
             'state' => 'required|max:100',
             'city' => 'required|max:100',
+            'name' => 'required|max:100',
+            'residence' => 'required|max:100',
             'postal_code' => 'required|integer|max:99999999999',
             'description' => 'required|max:100',
         ]);
@@ -39,21 +41,24 @@ class DirectionController extends Controller
         return $direction;
     }
 
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Direction $direction)
     {
         $fields = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-            'state' => 'required|max:100',
-            'city' => 'required|max:100',
-            'postal code' => 'required|integer|max:11',
-            'description' => 'required|max:100',
+            'user_id' => 'nullable|integer|exists:users,id',
+            'state' => 'nullable|max:100',
+            'city' => 'nullable|max:100',
+            'name' => 'nullable|max:100',
+            'residence' => 'nullable|max:100',
+            'postal_code' => 'nullable|integer|max:99999999',
+            'description' => 'nullable|max:100',
         ]);
         
         $direction->update($fields);
-
+ 
         return response()->json($direction);
     }
 

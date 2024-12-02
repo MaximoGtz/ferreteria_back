@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
@@ -21,7 +22,7 @@ class UserController extends Controller
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'image' => 'nullable|image|max:1024',
+            'image' => 'nullable|max:1024',
             'email' => 'required|email|unique:users,email|max:255',
             'phone' => 'required|string|max:255',
             'rfc' => 'nullable|string|max:255',
@@ -49,6 +50,10 @@ class UserController extends Controller
             $user->image = $rutaCompleta;
             $user->save();
         }
+        $cart = Cart::firstOrCreate(
+            ['client_id' => $user->id], // Cambiar este ID por el del cliente autenticado
+            ['total' => 0]
+        );
 
         return response()->json($user, 201);
     }
@@ -67,13 +72,13 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $fields = $request->validate([
-            'name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'image' => 'nullable|image|max:1024',
-            'email' => 'email|unique:users,email,' . $user->id . '|max:255',
-            'phone' => 'string|max:255',
+            'name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'image' => 'nullable|max:1024',
+            'email' => 'nullable|email|unique:users,email,' . $user->id . '|max:255',
+            'phone' => 'nullable|string|max:255',
             'rfc' => 'nullable|string|max:255',
-            'role' => 'string|max:255',
+            'role' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:6',
         ]);
 
