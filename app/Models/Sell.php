@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Sell extends Model
 {
     protected $fillable = [
-        'cart_id', 'client_id', 'total', 'iva', 'purchase_method'
+        'cart_id', 'client_id', 'direction_id', 'total', 'iva', 'purchase_method'
     ];
     public function cart()
 {
@@ -18,6 +18,10 @@ class Sell extends Model
 public function client()
 {
     return $this->belongsTo(User::class, 'client_id');
+}
+public function direction()
+{
+    return $this->belongsTo(Direction::class);
 }
 public function product_cart()
 {

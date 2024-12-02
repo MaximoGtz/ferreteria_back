@@ -22,7 +22,7 @@ class UserController extends Controller
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'image' => 'nullable|image|max:1024',
+            'image' => 'nullable|max:1024',
             'email' => 'required|email|unique:users,email|max:255',
             'phone' => 'required|string|max:255',
             'rfc' => 'nullable|string|max:255',
