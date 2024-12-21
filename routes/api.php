@@ -11,6 +11,7 @@ use App\Http\Controllers\SellController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
